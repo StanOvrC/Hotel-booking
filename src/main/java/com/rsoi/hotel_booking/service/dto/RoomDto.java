@@ -1,6 +1,5 @@
 package com.rsoi.hotel_booking.service.dto;
 
-import com.rsoi.hotel_booking.entity.Room;
 import lombok.Data;
 
 import java.math.BigDecimal;

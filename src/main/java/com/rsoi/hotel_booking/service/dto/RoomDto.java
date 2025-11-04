@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 public class RoomDto {
     private Long id;
     private String number;
-    private Room.RoomType type;
+    private String type;
     private BigDecimal pricePerNight;
-    private Room.Status status;
+    private String status;
     private String description;
 }

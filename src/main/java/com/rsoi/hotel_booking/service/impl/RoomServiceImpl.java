@@ -8,6 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -20,8 +21,8 @@ public class RoomServiceImpl implements RoomService {
         roomDto.setId(room.getId());
         roomDto.setNumber(room.getNumber());
         roomDto.setPricePerNight(room.getPricePerNight());
-        roomDto.setStatus(room.getStatus());
-        roomDto.setType(room.getType());
+        roomDto.setStatus(String.valueOf(room.getStatus()));
+        roomDto.setType(String.valueOf(room.getType()));
         roomDto.setDescription(room.getDescription());
         return roomDto;
     }
@@ -32,8 +33,8 @@ public class RoomServiceImpl implements RoomService {
         room.setPricePerNight(roomDto.getPricePerNight());
         room.setNumber(roomDto.getNumber());
         room.setDescription(roomDto.getDescription());
-        room.setStatus(roomDto.getStatus());
-        room.setType(roomDto.getType());
+        room.setStatus(Room.Status.valueOf(roomDto.getStatus()));
+        room.setType(Room.RoomType.valueOf(roomDto.getType()));
         return room;
     }
 
@@ -71,4 +72,31 @@ public class RoomServiceImpl implements RoomService {
         }
         roomRepository.deleteById(id);
     }
+
+    @Override
+    public List<RoomDto> filterRooms(String type, BigDecimal maxPrice) {
+        List<Room> rooms;
+
+        if (type != null && !type.isEmpty() && maxPrice != null) {
+            rooms = roomRepository.findByTypeAndPricePerNightLessThanEqual(Room.RoomType.valueOf(type), maxPrice);
+        } else if (type != null && !type.isEmpty()) {
+            rooms = roomRepository.findByType(Room.RoomType.valueOf(type));
+        } else if (maxPrice != null) {
+            rooms = roomRepository.findByPricePerNightLessThanEqual(maxPrice);
+        } else {
+            rooms = roomRepository.findAll();
+        }
+
+        return rooms.stream().map(r -> {
+            RoomDto dto = new RoomDto();
+            dto.setId(r.getId());
+            dto.setNumber(r.getNumber());
+            dto.setType(r.getType().toString());
+            dto.setPricePerNight(r.getPricePerNight());
+            dto.setStatus(r.getStatus().toString());
+            dto.setDescription(r.getDescription());
+            return dto;
+        }).toList();
+    }
+
 }

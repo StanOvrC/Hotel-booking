@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -58,5 +59,17 @@ public class RoomController {
         roomService.delete(id);
         return "redirect:/rooms";
     }
+
+    @GetMapping("/filter")
+    public String filterRooms(
+            @RequestParam(name = "type", required = false) String type,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice,
+            Model model
+    ) {
+        List<RoomDto> filtered = roomService.filterRooms(type, maxPrice);
+        model.addAttribute("rooms", filtered);
+        return "rooms";
+    }
+
 
 }

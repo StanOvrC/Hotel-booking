@@ -7,6 +7,22 @@
 </head>
 <body>
 <h1>Rooms</h1>
+<form action="/hotel-booking/rooms/filter" method="get">
+    <label>Type:</label>
+    <select name="type">
+        <option value=""></option>
+        <option value="SINGLE">Single</option>
+        <option value="DOUBLE">Double</option>
+        <option value="FAMILY">Family</option>
+    </select>
+
+    <label>Max. price:</label>
+    <input type="number" step="0.01" name="maxPrice"/>
+
+    <input type="submit" value="Filter"/>
+</form>
+
+<hr/>
 <table border="1">
     <thead>
         <tr>

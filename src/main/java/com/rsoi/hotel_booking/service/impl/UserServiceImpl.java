@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
         userDto.setPassword(user.getPassword());
         userDto.setUsername(user.getUsername());
         userDto.setEmail(user.getEmail());
-        userDto.setRole(user.getRole());
+        userDto.setRole(String.valueOf(user.getRole()));
         return userDto;
     }
 
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
         user.setEmail(userDto.getEmail());
-        user.setRole(userDto.getRole());
+        user.setRole(User.Role.valueOf(userDto.getRole()));
         return user;
     }
 
@@ -70,4 +70,41 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
     }
+
+    @Override
+    public boolean register(UserDto userDto) {
+        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+            return false;
+        }
+
+        User user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
+        user.setEmail(userDto.getEmail());
+        user.setRole(User.Role.valueOf(userDto.getRole()));
+
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public UserDto login(String email, String password) {
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            return null;
+        }
+
+        if (!user.getPassword().equals(password)) {
+            return null;
+        }
+
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setRole(String.valueOf(user.getRole()));
+        return dto;
+    }
+
 }

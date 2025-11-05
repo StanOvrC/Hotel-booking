@@ -5,6 +5,8 @@
     <title>Редактирование номера</title>
 </head>
 <body>
+<%@ include file="/WEB-INF/jsp/navbar.jsp" %>
+
 <h2>Редактирование номера</h2>
 
 <form action="/hotel-booking/rooms/edit" method="post">

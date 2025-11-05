@@ -6,6 +6,8 @@
 
 </head>
 <body>
+<%@ include file="/WEB-INF/jsp/navbar.jsp" %>
+
 <div class="container">
     <h2>Room № ${room.number}</h2>
     <div class="info"><span class="label">Type:</span> ${room.type}</div>

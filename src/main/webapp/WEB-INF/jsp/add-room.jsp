@@ -14,6 +14,8 @@
     </style>
 </head>
 <body>
+<%@ include file="/WEB-INF/jsp/navbar.jsp" %>
+
 <h2 style="text-align:center;">Add New Room</h2>
 
 <form action="/hotel-booking/rooms/add" method="post">

@@ -6,6 +6,8 @@
     <title>Rooms</title>
 </head>
 <body>
+<%@ include file="/WEB-INF/jsp/navbar.jsp" %>
+
 <h1>Rooms</h1>
 <form action="/hotel-booking/rooms/filter" method="get">
     <label>Type:</label>

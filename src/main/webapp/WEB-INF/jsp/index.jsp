@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Hotel Booking</title>
 </head>
 <body>
-<p>Hotel booking</p>
-</div>
+<%@ include file="/WEB-INF/jsp/navbar.jsp" %>
+
+<h1 style="text-align:center;">Welcome to Hotel Booking</h1>
+<p style="text-align:center;">Use the menu above to explore rooms or manage your account.</p>
 </body>
 </html>

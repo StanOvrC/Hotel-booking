@@ -11,6 +11,7 @@ public class BookingDto {
     private Long id;
     private Long userId;
     private Long roomId;
+    private String roomNumber;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private Booking.Status status;

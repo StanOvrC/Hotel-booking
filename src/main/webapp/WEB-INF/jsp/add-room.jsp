@@ -2,47 +2,59 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Add Room</title>
-    <style>
-        body { font-family: Arial; margin: 40px; }
-        form { width: 400px; margin: auto; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
-        button { margin-top: 15px; padding: 10px; width: 100%; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        button:hover { background-color: #218838; }
-        a { display: block; margin-top: 15px; text-align: center; color: #007BFF; text-decoration: none; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
 </head>
 <body>
+
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
-<h2 style="text-align:center;">Add New Room</h2>
+<section class="auth-container" style="margin-top: 30px;">
+  <div class="auth-card" >
+    <h2>Add New Room</h2>
 
-<form action="/hotel-booking/rooms/add" method="post">
-    <label>Number:</label>
-    <input type="text" name="number" required />
+    <c:if test="${not empty error}">
+      <div class="error-message">${error}</div>
+    </c:if>
 
-    <label>Type:</label>
-    <select name="type">
+    <form action="${pageContext.request.contextPath}/rooms/add" method="post">
+      <label for="number">Room Number</label>
+      <input id="number" type="text" name="number" placeholder="e.g. 101" required>
+
+      <label for="type">Room Type</label>
+      <select id="type" name="type" required>
+        <option value="">Select type...</option>
         <option value="SINGLE">Single</option>
         <option value="DOUBLE">Double</option>
         <option value="FAMILY">Family</option>
-    </select>
+      </select>
 
-    <label>Price per night:</label>
-    <input type="number" step="0.01" name="pricePerNight" required />
+      <label for="price">Price per Night</label>
+      <input id="price" type="number" step="0.01" name="pricePerNight" placeholder="e.g. 89.99" required>
 
-    <label>Status:</label>
-    <select name="status">
+      <label for="status">Status</label>
+      <select id="status" name="status">
         <option value="AVAILABLE">Available</option>
         <option value="BOOKED">Booked</option>
-    </select>
+      </select>
 
-    <label>Description:</label>
-    <textarea name="description" rows="4"></textarea>
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4" placeholder="Describe the room..." required></textarea>
 
-    <button type="submit">Save</button>
-    <a href="/hotel-booking/rooms">← Cancel</a>
-</form>
+      <button type="submit" class="auth-btn" style="margin-top: 20px;">Save Room</button>
+
+      <div class="switch-link">
+        <a href="${pageContext.request.contextPath}/rooms">← Back to Rooms</a>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+    2025 Hotel
+</footer>
+
 </body>
 </html>

@@ -1,52 +1,46 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Registration</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f7f7f7; }
-        .container { width: 400px; margin: 60px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
-        h2 { text-align: center; }
-        form { display: flex; flex-direction: column; gap: 10px; }
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        button { padding: 10px; background-color: #007bff; border: none; color: white; border-radius: 5px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .error { color: red; text-align: center; }
-    </style>
+    <meta charset="UTF-8">
+    <title>Register - Hotel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
 </head>
 <body>
+
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
-<div class="container">
-    <h2>Registration</h2>
+<section class="auth-container">
+    <div class="auth-card">
+        <h2>Create Account</h2>
 
-    <c:if test="${not empty error}">
-        <div class="error">${error}</div>
-    </c:if>
+        <c:if test="${not empty error}">
+            <div class="error-message">${error}</div>
+        </c:if>
 
-    <form action="${pageContext.request.contextPath}/users/register" method="post">
-        <label>Name:</label>
-        <input type="text" name="username" required>
+        <form action="${pageContext.request.contextPath}/users/register" method="post">
+            <label>Username</label>
+            <input type="text" name="username" required placeholder="Enter username">
 
-        <label>Email:</label>
-        <input type="email" name="email" required>
+            <label>Email</label>
+            <input type="email" name="email" required placeholder="Enter email">
 
-        <label>Password:</label>
-        <input type="password" name="password" required>
+            <label>Password</label>
+            <input type="password" name="password" required placeholder="Enter password">
 
-        <label>Role:</label>
-        <select name="role" required>
-            <option value="USER">User</option>
-            <option value="MANAGER">Manager</option>
-            <option value="ADMIN">Admin</option>
-        </select>
+            <button type="submit" class="auth-btn">Register</button>
+        </form>
 
-        <button type="submit">Register</button>
-    </form>
+        <p class="switch-link">
+            Already have an account? <a href="${pageContext.request.contextPath}/users/login">Login</a>
+        </p>
+    </div>
+</section>
 
-    <p style="text-align:center; margin-top:15px;">
-        Already have an account? <a href="${pageContext.request.contextPath}/users/login">Log in</a>
-    </p>
-</div>
+<footer>
+    2025 Hotel
+</footer>
+
 </body>
 </html>

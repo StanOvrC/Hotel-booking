@@ -128,4 +128,9 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Override
+    public void updateStatus(Long id, String status) {
+        bookingRepository.updateStatusById(id, Booking.Status.valueOf(status));
+    }
+
 }

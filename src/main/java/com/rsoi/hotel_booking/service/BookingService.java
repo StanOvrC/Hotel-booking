@@ -18,4 +18,6 @@ public interface BookingService {
     List<BookingDto> getByUser(Long id);
 
     void cancel(Long bookingId);
+
+    void updateStatus(Long id, String status);
 }

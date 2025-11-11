@@ -34,11 +34,15 @@ public class BookingController {
     }
 
     @GetMapping("/add")
-    public String showAddForm(HttpSession session, Model model) {
+    public String showAddForm(@RequestParam(name = "roomId", required = false) Long roomId, HttpSession session, Model model) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
         if (user == null) return "redirect:/users/login";
 
         BookingDto booking = new BookingDto();
+        if (roomId != null) {
+            booking.setRoomId(roomId);
+        }
+
         model.addAttribute("booking", booking);
         return "add-booking";
     }
@@ -92,4 +96,25 @@ public class BookingController {
         model.addAttribute("booking", booking);
         return "booking-details";
     }
+
+    @PostMapping("/approve")
+    public String approveBooking(@RequestParam("id") Long bookingId, HttpSession session) {
+        UserDto user = (UserDto) session.getAttribute("currentUser");
+        if (user == null) return "redirect:/users/login";
+        if (!"ADMIN".equals(user.getRole()) && !"MANAGER".equals(user.getRole())) return "redirect:/bookings";
+
+        bookingService.updateStatus(bookingId, "CONFIRMED");
+        return "redirect:/bookings";
+    }
+
+    @PostMapping("/reject")
+    public String rejectBooking(@RequestParam("id") Long bookingId, HttpSession session) {
+        UserDto user = (UserDto) session.getAttribute("currentUser");
+        if (user == null) return "redirect:/users/login";
+        if (!"ADMIN".equals(user.getRole()) && !"MANAGER".equals(user.getRole())) return "redirect:/bookings";
+
+        bookingService.updateStatus(bookingId, "CANCELLED");
+        return "redirect:/bookings";
+    }
+
 }

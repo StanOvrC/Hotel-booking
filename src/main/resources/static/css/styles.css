@@ -26,5 +26,11 @@
 /* === PROFILE PAGE ===*/
 @import url('profile/profile.css');
 
+/* === BOOKING  ===*/
+/* Booking-details */
+@import url('booking/booking-details.css');
+
+@import url('booking/bookings.css');
+
 
 

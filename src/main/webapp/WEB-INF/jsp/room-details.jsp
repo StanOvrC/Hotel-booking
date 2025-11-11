@@ -47,6 +47,11 @@
                 <c:if test="${room.status == 'AVAILABLE'}">
                     <a href="${pageContext.request.contextPath}/bookings/add?roomId=${room.id}" class="book-btn">Book This Room</a>
                 </c:if>
+
+                <c:if test="${sessionScope.currentUser.role == 'MANAGER' or sessionScope.currentUser.role == 'ADMIN'}">
+                     <a href="${pageContext.request.contextPath}/rooms/edit/${room.id}" class="back-link">Edit this room</a>
+                </c:if>
+
             </div>
         </div>
     </div>

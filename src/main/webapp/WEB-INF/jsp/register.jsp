@@ -11,6 +11,7 @@
 
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
+<div class="main-content">
 <section class="auth-container">
     <div class="auth-card">
         <h2>Create Account</h2>
@@ -37,6 +38,7 @@
         </p>
     </div>
 </section>
+</div>
 
 <footer>
     2025 Hotel

@@ -1,0 +1,16 @@
+.room-meta div:nth-child(3) span:last-child {
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.room-meta div:nth-child(3) span:last-child:contains("AVAILABLE") {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.room-meta div:nth-child(3) span:last-child:contains("BOOKED") {
+    background: #ffebee;
+    color: #c62828;
+}

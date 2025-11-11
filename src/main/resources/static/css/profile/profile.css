@@ -87,9 +87,13 @@
 .profile-actions {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 15px;
     border-top: 1px solid #eee;
     padding-top: 25px;
+    padding-bottom: 0px;
+    justify-content: center;
+    min-height: 20px;
 }
 
 .logout-btn {
@@ -112,7 +116,7 @@
 
 .back-link-profile {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 5px;
 }
 
 .back-link-profile a {

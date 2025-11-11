@@ -33,6 +33,10 @@
   color: #555;
 }
 
+.auth-card textarea{
+    resize: vertical;
+}
+
 .auth-card input {
   padding: 10px 12px;
   margin-bottom: 15px;

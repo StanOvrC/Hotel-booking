@@ -47,7 +47,7 @@
       <button type="submit" class="auth-btn" style="margin-top: 20px;">Save Changes</button>
 
       <div class="switch-link">
-        <a href="${pageContext.request.contextPath}/rooms">← Back to Rooms</a>
+        <a href="${pageContext.request.contextPath}/rooms">&larr; Back to Rooms</a>
       </div>
     </form>
 

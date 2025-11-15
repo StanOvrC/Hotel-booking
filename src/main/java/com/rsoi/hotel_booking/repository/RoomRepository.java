@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
-    Room findByNumber(String number);
+    Optional<Room> findByNumber(String number);
 
     List<Room> findByType(Room.RoomType type);
 

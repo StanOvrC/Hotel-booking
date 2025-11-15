@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
@@ -37,16 +38,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingDto;
     }
 
-    private static Booking mapToEntity(BookingDto bookingDto) {
-        Booking booking = new Booking();
-        booking.setId(bookingDto.getId());
-        booking.setCheckInDate(bookingDto.getCheckInDate());
-        booking.setCheckOutDate(bookingDto.getCheckOutDate());
-        booking.setStatus(bookingDto.getStatus());
-        booking.setTotalPrice(bookingDto.getTotalPrice());
-        return booking;
-    }
-
     @Override
     public List<BookingDto> getAll() {
         log.debug("BookingService getAll()");
@@ -58,7 +49,9 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getById(Long id) {
         log.debug("BookingService getById()");
         Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking with id " + id + " not found"));
-        return mapToDto(booking);
+        BookingDto dto = mapToDto(booking);
+        dto.setRoomNumber(booking.getRoom().getNumber());
+        return dto;
     }
 
     @Override
@@ -67,14 +60,27 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(bookingDto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Room room = roomRepository.findByNumber(bookingDto.getRoomNumber());
+        Room room = roomRepository.findById(bookingDto.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Room with id " + bookingDto.getRoomId() + " not found"));
 
-        Booking booking = mapToEntity(bookingDto);
+        if (bookingRepository.hasOverlap(room.getId(),
+                bookingDto.getCheckInDate(),
+                bookingDto.getCheckOutDate())) {
+            throw new IllegalStateException("Room is already booked for these dates");
+        }
+
+        if (!bookingDto.getCheckOutDate().isAfter(bookingDto.getCheckInDate())) {
+            throw new IllegalStateException("Checkout date must be after check-in date");
+        }
+
+        Booking booking = new Booking();
 
         long days = ChronoUnit.DAYS.between(bookingDto.getCheckInDate(), bookingDto.getCheckOutDate());
         BigDecimal totalPrice = room.getPricePerNight().multiply(BigDecimal.valueOf(days));
-        booking.setTotalPrice(totalPrice);
 
+        booking.setTotalPrice(totalPrice);
+        booking.setCheckInDate(bookingDto.getCheckInDate());
+        booking.setCheckOutDate(bookingDto.getCheckOutDate());
         booking.setUser(user);
         booking.setRoom(room);
         booking.setStatus(Booking.Status.PENDING);
@@ -89,15 +95,29 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
+        if (bookingRepository.hasOverlapExceptSelf(
+                bookingDto.getRoomId(),
+                bookingDto.getId(),
+                bookingDto.getCheckInDate(),
+                bookingDto.getCheckOutDate())) {
+            throw new IllegalStateException("Room is already booked for these dates");
+        }
+
+        if (!bookingDto.getCheckOutDate().isAfter(bookingDto.getCheckInDate())) {
+            throw new IllegalStateException("Checkout date must be after check-in date");
+        }
+
         booking.setCheckInDate(bookingDto.getCheckInDate());
         booking.setCheckOutDate(bookingDto.getCheckOutDate());
         booking.setStatus(bookingDto.getStatus());
-        booking.setTotalPrice(bookingDto.getTotalPrice());
+        booking.setRoom(roomRepository.findById(bookingDto.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found")));
+        long days = ChronoUnit.DAYS.between(bookingDto.getCheckInDate(), bookingDto.getCheckOutDate());
+        BigDecimal totalPrice = booking.getRoom().getPricePerNight().multiply(BigDecimal.valueOf(days));
+        booking.setTotalPrice(totalPrice);
 
         booking.setUser(userRepository.findById(bookingDto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found")));
-        booking.setRoom(roomRepository.findById(bookingDto.getRoomId())
-                .orElseThrow(() -> new EntityNotFoundException("Room not found")));
 
         return mapToDto(bookingRepository.save(booking));
     }
@@ -121,16 +141,35 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void cancel(Long bookingId) {
         log.debug("BookingService cancel()");
-        Booking booking = bookingRepository.findById(bookingId).orElse(null);
-        if (booking != null) {
-            booking.setStatus(Booking.Status.valueOf("CANCELLED"));
-            bookingRepository.save(booking);
-        }
+        updateStatus(bookingId, "CANCELLED");
     }
 
     @Override
+    @Transactional
     public void updateStatus(Long id, String status) {
-        bookingRepository.updateStatusById(id, Booking.Status.valueOf(status));
+        Booking.Status newStatus = Booking.Status.valueOf(status);
+
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+        booking.setStatus(newStatus);
+
+        Room room = booking.getRoom();
+
+        switch (newStatus) {
+            case CONFIRMED -> {
+                room.setStatus(Room.Status.BOOKED);
+                roomRepository.save(room);
+            }
+            case CANCELLED, COMPLETED -> {
+                room.setStatus(Room.Status.AVAILABLE);
+                roomRepository.save(room);
+            }
+            default -> {
+            }
+        }
+
+        bookingRepository.save(booking);
     }
 
 }

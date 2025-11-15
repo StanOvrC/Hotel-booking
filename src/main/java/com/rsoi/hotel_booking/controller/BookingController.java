@@ -3,14 +3,17 @@ package com.rsoi.hotel_booking.controller;
 import com.rsoi.hotel_booking.service.BookingService;
 import com.rsoi.hotel_booking.service.dto.BookingDto;
 import com.rsoi.hotel_booking.service.dto.UserDto;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Log4j2
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/bookings")
@@ -53,12 +56,13 @@ public class BookingController {
         if (user == null) return "redirect:/users/login";
 
         bookingDto.setUserId(user.getId());
-        BookingDto created = bookingService.create(bookingDto);
-        if (created == null) {
-            model.addAttribute("error", "Room is already booked for these dates");
+        try {
+            BookingDto created = bookingService.create(bookingDto);
+            return "redirect:/bookings";
+        } catch (EntityNotFoundException | IllegalStateException e) {
+            model.addAttribute("error", e.getMessage());
             return "add-booking";
         }
-        return "redirect:/bookings";
     }
 
     @PostMapping("/cancel")
@@ -66,12 +70,15 @@ public class BookingController {
         UserDto user = (UserDto) session.getAttribute("currentUser");
         if (user == null) return "redirect:/users/login";
 
-        BookingDto booking = bookingService.getById(bookingId);
-        if (booking == null) return "redirect:/bookings";
+        BookingDto booking;
+        try {
+            booking = bookingService.getById(bookingId);
+        } catch (EntityNotFoundException e) {
+            return "redirect:/bookings";
+        }
 
-        if (!booking.getUserId().equals(user.getId()) &&
-                !"ADMIN".equals(user.getRole()) &&
-                !"MANAGER".equals(user.getRole())) {
+        log.info("BEFORE CAN ACCESS BOOKING{}|{}", user.getId(), booking.getUserId());
+        if (!canAccessBooking(user, booking)) {
             return "redirect:/bookings";
         }
 
@@ -84,12 +91,14 @@ public class BookingController {
         UserDto user = (UserDto) session.getAttribute("currentUser");
         if (user == null) return "redirect:/users/login";
 
-        BookingDto booking = bookingService.getById(bookingId);
-        if (booking == null) return "redirect:/bookings";
+        BookingDto booking;
+        try {
+            booking = bookingService.getById(bookingId);
+        } catch (EntityNotFoundException e) {
+            return "redirect:/bookings";
+        }
 
-        if (!booking.getUserId().equals(user.getId()) &&
-                !"ADMIN".equals(user.getRole()) &&
-                !"MANAGER".equals(user.getRole())) {
+        if (!canAccessBooking(user, booking)) {
             return "redirect:/bookings";
         }
 
@@ -115,6 +124,12 @@ public class BookingController {
 
         bookingService.updateStatus(bookingId, "CANCELLED");
         return "redirect:/bookings";
+    }
+
+    private boolean canAccessBooking(UserDto user, BookingDto booking) {
+        boolean admin = "ADMIN".equals(user.getRole()) || "MANAGER".equals(user.getRole());
+        boolean owner = booking.getUserId().equals(user.getId());
+        return admin || owner;
     }
 
 }

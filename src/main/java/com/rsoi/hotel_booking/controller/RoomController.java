@@ -22,14 +22,14 @@ public class RoomController {
     public String getRooms(Model model) {
         List<RoomDto> rooms = roomService.getAll();
         model.addAttribute("rooms", rooms);
-        return "rooms";
+        return "room/rooms";
     }
 
     @GetMapping("/{id}")
     public String getRoomDetails(@PathVariable("id") Long id, Model model) {
         RoomDto room = roomService.getById(id);
         model.addAttribute("room", room);
-        return "room-details";
+        return "room/room-details";
     }
 
     @GetMapping("/add")
@@ -38,7 +38,7 @@ public class RoomController {
         if (user == null || "USER".equals(user.getRole())) {
             return "redirect:/rooms";
         }
-        return "add-room";
+        return "room/add-room";
     }
 
     @PostMapping("/add")
@@ -59,7 +59,7 @@ public class RoomController {
         }
         RoomDto room = roomService.getById(id);
         model.addAttribute("room", room);
-        return "edit-room";
+        return "room/edit-room";
     }
 
     @PostMapping("/edit")
@@ -90,8 +90,6 @@ public class RoomController {
     ) {
         List<RoomDto> filtered = roomService.filterRooms(type, maxPrice);
         model.addAttribute("rooms", filtered);
-        return "rooms";
+        return "room/rooms";
     }
-
-
 }

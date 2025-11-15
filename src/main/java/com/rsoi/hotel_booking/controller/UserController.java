@@ -21,7 +21,7 @@ public class UserController {
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("user", new UserDto());
-        return "register";
+        return "user/register";
     }
 
     @PostMapping("/register")
@@ -37,7 +37,7 @@ public class UserController {
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("loginRequest", new LoginRequest());
-        return "login";
+        return "user/login";
     }
 
     @PostMapping("/login")
@@ -48,7 +48,7 @@ public class UserController {
 
         if (user == null) {
             model.addAttribute("error", "Invalid email or password");
-            return "login";
+            return "user/login";
         }
 
         session.setAttribute("currentUser", user);
@@ -65,7 +65,7 @@ public class UserController {
     public String userProfile(HttpSession session, Model model) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
         model.addAttribute("user", user);
-        return "profile";
+        return "user/profile";
     }
 
     @GetMapping("/logout")
@@ -73,5 +73,4 @@ public class UserController {
         session.invalidate();
         return "redirect:/users/login";
     }
-
 }

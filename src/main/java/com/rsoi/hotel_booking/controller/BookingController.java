@@ -32,7 +32,7 @@ public class BookingController {
         }
 
         model.addAttribute("bookings", bookings);
-        return "bookings";
+        return "booking/bookings";
     }
 
     @GetMapping("/add")
@@ -43,7 +43,7 @@ public class BookingController {
         }
 
         model.addAttribute("booking", booking);
-        return "add-booking";
+        return "booking/add-booking";
     }
 
     @PostMapping("/add")
@@ -56,7 +56,7 @@ public class BookingController {
             return "redirect:/bookings";
         } catch (EntityNotFoundException | IllegalStateException e) {
             model.addAttribute("error", e.getMessage());
-            return "add-booking";
+            return "booking/add-booking";
         }
     }
 
@@ -96,7 +96,7 @@ public class BookingController {
         }
 
         model.addAttribute("booking", booking);
-        return "booking-details";
+        return "booking/booking-details";
     }
 
     @PostMapping("/approve")

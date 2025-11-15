@@ -9,15 +9,16 @@
 
 <body>
 <jsp:include page="/WEB-INF/jsp/navbar.jsp" />
-
-<div class="booking-container">
+<div class="main-content">
+    <section class="auth-container" style="margin-top: 30px;">
+    <div class="auth-card">
     <h2>Book a Room</h2>
 
     <c:if test="${not empty error}">
-        <div class="error">${error}</div>
+        <div class="error-message">${error}</div>
     </c:if>
 
-    <form class="booking-form" action="${pageContext.request.contextPath}/bookings/add" method="post">
+    <form action="${pageContext.request.contextPath}/bookings/add" method="post">
 
         <c:if test="${not empty booking.roomId}">
             <input type="hidden" name="roomId" value="${booking.roomId}">
@@ -35,12 +36,19 @@
         <label>Check-out date:</label>
         <input type="date" name="checkOutDate" required>
 
-        <button type="submit" class="booking-btn">Confirm Booking</button>
+        <button type="submit" class="auth-btn">Confirm Booking</button>
 
-        <div class="back-link">
+        <div class="switch-link">
             <a href="${pageContext.request.contextPath}/rooms">&larr; Back to rooms</a>
         </div>
     </form>
+    </div>
+    </section>
 </div>
+
+<footer>
+    2025 Hotel
+</footer>
+
 </body>
 </html>

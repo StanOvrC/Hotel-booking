@@ -2,7 +2,9 @@ package com.rsoi.hotel_booking.service.impl;
 
 import com.rsoi.hotel_booking.entity.User;
 import com.rsoi.hotel_booking.repository.UserRepository;
+import com.rsoi.hotel_booking.service.EncryptionService;
 import com.rsoi.hotel_booking.service.UserService;
+import com.rsoi.hotel_booking.service.dto.RegisterRequest;
 import com.rsoi.hotel_booking.service.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final EncryptionService encryptionService;
 
     private static UserDto mapToDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
-        userDto.setPassword(user.getPassword());
         userDto.setUsername(user.getUsername());
         userDto.setEmail(user.getEmail());
         userDto.setRole(String.valueOf(user.getRole()));
@@ -29,7 +31,6 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setId(userDto.getId());
         user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
         user.setEmail(userDto.getEmail());
         user.setRole(User.Role.valueOf(userDto.getRole()));
         return user;
@@ -72,16 +73,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean register(UserDto userDto) {
-        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+    public boolean register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()) != null) {
             return false;
         }
 
         User user = new User();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        user.setEmail(userDto.getEmail());
-        user.setRole(User.Role.valueOf(userDto.getRole()));
+        user.setUsername(request.getUsername());
+        user.setPassword(encryptionService.digest(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setRole(User.Role.USER);
 
         userRepository.save(user);
         return true;
@@ -95,7 +96,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        if (!user.getPassword().equals(password)) {
+        if (!user.getPassword().equals(encryptionService.digest(password))) {
             return null;
         }
 
@@ -106,5 +107,4 @@ public class UserServiceImpl implements UserService {
         dto.setRole(String.valueOf(user.getRole()));
         return dto;
     }
-
 }

@@ -3,9 +3,8 @@ package com.rsoi.hotel_booking.service.dto;
 import lombok.Data;
 
 @Data
-public class UserDto {
-    private Long id;
+public class RegisterRequest {
     private String username;
     private String email;
-    private String role;
+    private String password;
 }

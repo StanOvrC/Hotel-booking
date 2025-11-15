@@ -2,6 +2,7 @@ package com.rsoi.hotel_booking.controller;
 
 import com.rsoi.hotel_booking.service.UserService;
 import com.rsoi.hotel_booking.service.dto.LoginRequest;
+import com.rsoi.hotel_booking.service.dto.RegisterRequest;
 import com.rsoi.hotel_booking.service.dto.UserDto;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,11 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") UserDto userDto, Model model) {
-        boolean success = userService.register(userDto);
+    public String registerUser(@ModelAttribute("user") RegisterRequest request, Model model) {
+        boolean success = userService.register(request);
         if (!success) {
-            model.addAttribute("error", "User with email: " + userDto.getEmail() + " already exists");
-            return "register";
+            model.addAttribute("error", "User with email: " + request.getEmail() + " already exists");
+            return "user/register";
         }
         return "redirect:/users/login";
     }

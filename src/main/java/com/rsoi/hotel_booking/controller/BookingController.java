@@ -23,7 +23,6 @@ public class BookingController {
     @GetMapping
     public String getUserBookings(HttpSession session, Model model) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) return "redirect:/users/login";
 
         List<BookingDto> bookings;
         if ("MANAGER".equals(user.getRole()) || "ADMIN".equals(user.getRole())) {
@@ -38,9 +37,6 @@ public class BookingController {
 
     @GetMapping("/add")
     public String showAddForm(@RequestParam(name = "roomId", required = false) Long roomId, HttpSession session, Model model) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) return "redirect:/users/login";
-
         BookingDto booking = new BookingDto();
         if (roomId != null) {
             booking.setRoomId(roomId);
@@ -53,7 +49,6 @@ public class BookingController {
     @PostMapping("/add")
     public String addBooking(@ModelAttribute("booking") BookingDto bookingDto, HttpSession session, Model model) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) return "redirect:/users/login";
 
         bookingDto.setUserId(user.getId());
         try {
@@ -68,7 +63,6 @@ public class BookingController {
     @PostMapping("/cancel")
     public String cancelBooking(@RequestParam("id") Long bookingId, HttpSession session) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) return "redirect:/users/login";
 
         BookingDto booking;
         try {
@@ -89,7 +83,6 @@ public class BookingController {
     @GetMapping("/{id}")
     public String bookingDetails(@PathVariable("id") Long bookingId, HttpSession session, Model model) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) return "redirect:/users/login";
 
         BookingDto booking;
         try {
@@ -109,7 +102,6 @@ public class BookingController {
     @PostMapping("/approve")
     public String approveBooking(@RequestParam("id") Long bookingId, HttpSession session) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) return "redirect:/users/login";
         if (!"ADMIN".equals(user.getRole()) && !"MANAGER".equals(user.getRole())) return "redirect:/bookings";
 
         bookingService.updateStatus(bookingId, "CONFIRMED");
@@ -119,7 +111,6 @@ public class BookingController {
     @PostMapping("/reject")
     public String rejectBooking(@RequestParam("id") Long bookingId, HttpSession session) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) return "redirect:/users/login";
         if (!"ADMIN".equals(user.getRole()) && !"MANAGER".equals(user.getRole())) return "redirect:/bookings";
 
         bookingService.updateStatus(bookingId, "CANCELLED");

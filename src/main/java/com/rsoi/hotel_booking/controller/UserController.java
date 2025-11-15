@@ -52,15 +52,18 @@ public class UserController {
         }
 
         session.setAttribute("currentUser", user);
-        return "redirect:/users/profile";
+
+        String redirectUrl = (String) session.getAttribute("redirectAfterLogin");
+        if (redirectUrl != null) {
+            session.removeAttribute("redirectAfterLogin");
+            return "redirect:" + redirectUrl;
+        }
+        return "redirect:/rooms";
     }
 
     @GetMapping("/profile")
     public String userProfile(HttpSession session, Model model) {
         UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null) {
-            return "redirect:/users/login";
-        }
         model.addAttribute("user", user);
         return "profile";
     }

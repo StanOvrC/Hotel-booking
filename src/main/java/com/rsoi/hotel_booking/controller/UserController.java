@@ -21,12 +21,12 @@ public class UserController {
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
-        model.addAttribute("user", new UserDto());
+        model.addAttribute("registerRequest", new RegisterRequest());
         return "user/register";
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") RegisterRequest request, Model model) {
+    public String registerUser(@ModelAttribute("registerRequest") RegisterRequest request, Model model) {
         boolean success = userService.register(request);
         if (!success) {
             model.addAttribute("error", "User with email: " + request.getEmail() + " already exists");

@@ -8,6 +8,7 @@ import com.rsoi.hotel_booking.service.dto.RegisterRequest;
 import com.rsoi.hotel_booking.service.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,50 +18,39 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EncryptionService encryptionService;
-
-    private static UserDto mapToDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setEmail(user.getEmail());
-        userDto.setRole(String.valueOf(user.getRole()));
-        return userDto;
-    }
-
-    private static User mapToEntity(UserDto userDto) {
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setUsername(userDto.getUsername());
-        user.setEmail(userDto.getEmail());
-        user.setRole(User.Role.valueOf(userDto.getRole()));
-        return user;
-    }
+    private final ModelMapper modelMapper;
 
     @Override
     public List<UserDto> getAll() {
-        List<User> users = userRepository.findAll();
-        return users.stream().map(UserServiceImpl::mapToDto).toList();
+        return userRepository.findAll().stream()
+                .map(this::toDto)
+                .toList();
     }
 
     @Override
     public UserDto getById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
-        return mapToDto(user);
+        return toDto(userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found")));
     }
 
     @Override
     public UserDto create(UserDto userDto) {
-        User user = userRepository.save(mapToEntity(userDto));
+        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+            throw new RuntimeException("User with email " + userDto.getEmail() + "already exists");
+        }
+        User user = userRepository.save(toEntity(userDto));
         return getById(user.getId());
     }
 
     @Override
     public UserDto update(UserDto userDto) {
-        if (!userRepository.existsById(userDto.getId())) {
-            throw new EntityNotFoundException("User not found");
-        }
-        userRepository.save(mapToEntity(userDto));
+        User existing = userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        existing.setUsername(userDto.getUsername());
+        existing.setEmail(userDto.getEmail());
+        existing.setRole(User.Role.valueOf(userDto.getRole()));
+
+        userRepository.save(existing);
         return getById(userDto.getId());
     }
 
@@ -100,11 +90,14 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setRole(String.valueOf(user.getRole()));
-        return dto;
+        return toDto(user);
+    }
+
+    private UserDto toDto(User user) {
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    private User toEntity(UserDto dto){
+        return modelMapper.map(dto, User.class);
     }
 }

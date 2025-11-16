@@ -34,17 +34,15 @@ public class RoomController {
 
     @GetMapping("/add")
     public String showAddForm(HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null || "USER".equals(user.getRole())) {
+        if (!hasAccess(session)) {
             return "redirect:/rooms";
         }
         return "room/add-room";
     }
 
     @PostMapping("/add")
-    public String addRoom(RoomDto roomDto, HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null || "USER".equals(user.getRole())) {
+    public String addRoom(@ModelAttribute("room") RoomDto roomDto, HttpSession session) {
+        if (!hasAccess(session)) {
             return "redirect:/rooms";
         }
         roomService.create(roomDto);
@@ -53,8 +51,7 @@ public class RoomController {
 
     @GetMapping("/edit/{id}")
     public String editRoomForm(@PathVariable("id") Long id, Model model, HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null || "USER".equals(user.getRole())) {
+        if (!hasAccess(session)) {
             return "redirect:/rooms";
         }
         RoomDto room = roomService.getById(id);
@@ -64,8 +61,7 @@ public class RoomController {
 
     @PostMapping("/edit")
     public String updateRoom(@ModelAttribute("room") RoomDto roomDto, HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null || "USER".equals(user.getRole())) {
+        if (!hasAccess(session)) {
             return "redirect:/rooms";
         }
         roomService.update(roomDto);
@@ -74,8 +70,7 @@ public class RoomController {
 
     @PostMapping("/delete")
     public String deleteRoom(@RequestParam("id") Long id, HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (user == null || "USER".equals(user.getRole())) {
+        if (!hasAccess(session)) {
             return "redirect:/rooms";
         }
         roomService.delete(id);
@@ -91,5 +86,11 @@ public class RoomController {
         List<RoomDto> filtered = roomService.filterRooms(type, maxPrice);
         model.addAttribute("rooms", filtered);
         return "room/rooms";
+    }
+
+    private boolean hasAccess(HttpSession session) {
+        UserDto user = (UserDto) session.getAttribute("currentUser");
+        if (user == null) return false;
+        return user.getRole().equals("ADMIN") || user.getRole().equals("MANAGER");
     }
 }

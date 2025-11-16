@@ -22,14 +22,11 @@ public class BookingController {
 
     @GetMapping
     public String getUserBookings(HttpSession session, Model model) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
+        UserDto user = getCurrentUser(session);
 
-        List<BookingDto> bookings;
-        if ("MANAGER".equals(user.getRole()) || "ADMIN".equals(user.getRole())) {
-            bookings = bookingService.getAll();
-        } else {
-            bookings = bookingService.getByUser(user.getId());
-        }
+        List<BookingDto> bookings = isAdminOrManager(user)
+                ? bookingService.getAll()
+                : bookingService.getByUser(user.getId());
 
         model.addAttribute("bookings", bookings);
         return "booking/bookings";
@@ -48,11 +45,11 @@ public class BookingController {
 
     @PostMapping("/add")
     public String addBooking(@ModelAttribute("booking") BookingDto bookingDto, HttpSession session, Model model) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-
+        UserDto user = getCurrentUser(session);
         bookingDto.setUserId(user.getId());
+
         try {
-            BookingDto created = bookingService.create(bookingDto);
+            bookingService.create(bookingDto);
             return "redirect:/bookings";
         } catch (EntityNotFoundException | IllegalStateException e) {
             model.addAttribute("error", e.getMessage());
@@ -62,17 +59,10 @@ public class BookingController {
 
     @PostMapping("/cancel")
     public String cancelBooking(@RequestParam("id") Long bookingId, HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
+        UserDto user = getCurrentUser(session);
 
-        BookingDto booking;
-        try {
-            booking = bookingService.getById(bookingId);
-        } catch (EntityNotFoundException e) {
-            return "redirect:/bookings";
-        }
-
-        log.info("BEFORE CAN ACCESS BOOKING{}|{}", user.getId(), booking.getUserId());
-        if (!canAccessBooking(user, booking)) {
+        BookingDto booking = getBookingWithAccessCheck(bookingId, session);
+        if (booking == null) {
             return "redirect:/bookings";
         }
 
@@ -82,16 +72,10 @@ public class BookingController {
 
     @GetMapping("/{id}")
     public String bookingDetails(@PathVariable("id") Long bookingId, HttpSession session, Model model) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
+        UserDto user = getCurrentUser(session);
 
-        BookingDto booking;
-        try {
-            booking = bookingService.getById(bookingId);
-        } catch (EntityNotFoundException e) {
-            return "redirect:/bookings";
-        }
-
-        if (!canAccessBooking(user, booking)) {
+        BookingDto booking = getBookingWithAccessCheck(bookingId, session);
+        if (booking == null) {
             return "redirect:/bookings";
         }
 
@@ -101,8 +85,8 @@ public class BookingController {
 
     @PostMapping("/approve")
     public String approveBooking(@RequestParam("id") Long bookingId, HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (!"ADMIN".equals(user.getRole()) && !"MANAGER".equals(user.getRole())) return "redirect:/bookings";
+        UserDto user = getCurrentUser(session);
+        if (!isAdminOrManager(user)) return "redirect:/bookings";
 
         bookingService.updateStatus(bookingId, "CONFIRMED");
         return "redirect:/bookings";
@@ -110,17 +94,33 @@ public class BookingController {
 
     @PostMapping("/reject")
     public String rejectBooking(@RequestParam("id") Long bookingId, HttpSession session) {
-        UserDto user = (UserDto) session.getAttribute("currentUser");
-        if (!"ADMIN".equals(user.getRole()) && !"MANAGER".equals(user.getRole())) return "redirect:/bookings";
+        UserDto user = getCurrentUser(session);
+        if (!isAdminOrManager(user)) return "redirect:/bookings";
 
         bookingService.updateStatus(bookingId, "CANCELLED");
         return "redirect:/bookings";
     }
 
     private boolean canAccessBooking(UserDto user, BookingDto booking) {
-        boolean admin = "ADMIN".equals(user.getRole()) || "MANAGER".equals(user.getRole());
-        boolean owner = booking.getUserId().equals(user.getId());
-        return admin || owner;
+        return isAdminOrManager(user) || booking.getUserId().equals(user.getId());
     }
 
+    private UserDto getCurrentUser(HttpSession session) {
+        return (UserDto) session.getAttribute("currentUser");
+    }
+
+    private boolean isAdminOrManager(UserDto user) {
+        return "ADMIN".equals(user.getRole()) || "MANAGER".equals(user.getRole());
+    }
+
+    private BookingDto getBookingWithAccessCheck(Long bookingId, HttpSession session) {
+        UserDto user = getCurrentUser(session);
+
+        try {
+            BookingDto booking = bookingService.getById(bookingId);
+            return canAccessBooking(user, booking) ? booking : null;
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
 }

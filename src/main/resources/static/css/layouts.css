@@ -18,3 +18,18 @@ footer {
   margin-top: 40px;
   background: #fff;
 }
+
+nav form button.logout-link {
+    all: unset;
+    cursor: pointer;
+    margin-left: 25px;
+    color: #444;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+
+nav form button.logout-link:hover {
+    color: #0077cc;
+}

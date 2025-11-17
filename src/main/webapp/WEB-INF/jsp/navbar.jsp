@@ -18,10 +18,8 @@
         <c:if test="${not empty pageContext.request.userPrincipal}">
                 <a href="${pageContext.request.contextPath}/users/profile">Profile</a>
                 <form action="${pageContext.request.contextPath}/logout" method="post" style="display:inline;">
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                    <button type="submit" >
-                        Logout
-                    </button>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                    <button type="submit" class="logout-link">Logout</button>
                 </form>
         </c:if>
     </nav>

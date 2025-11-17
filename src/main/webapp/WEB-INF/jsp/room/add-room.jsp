@@ -21,6 +21,7 @@
     </c:if>
 
     <form action="${pageContext.request.contextPath}/rooms/add" method="post">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
       <label for="number">Room Number</label>
       <input id="number" type="text" name="number" placeholder="e.g. 101" required>
 

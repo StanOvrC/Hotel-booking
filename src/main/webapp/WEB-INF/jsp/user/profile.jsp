@@ -60,6 +60,7 @@
 
                 <div class="profile-actions">
                     <form action="${pageContext.request.contextPath}/users/logout" method="post">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                         <button type="submit" class="logout-btn">Logout</button>
                     </form>
                 </div>

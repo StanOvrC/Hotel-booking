@@ -2,22 +2,25 @@ package com.rsoi.hotel_booking.service.impl;
 
 import com.rsoi.hotel_booking.entity.User;
 import com.rsoi.hotel_booking.repository.UserRepository;
-import com.rsoi.hotel_booking.service.EncryptionService;
 import com.rsoi.hotel_booking.service.UserService;
 import com.rsoi.hotel_booking.service.dto.RegisterRequest;
 import com.rsoi.hotel_booking.service.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
-    private final EncryptionService encryptionService;
+    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
     @Override
@@ -70,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(encryptionService.digest(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setRole(User.Role.USER);
 
@@ -79,25 +82,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto login(String email, String password) {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
-
         if (user == null) {
-            return null;
+            throw new UsernameNotFoundException("User not found");
         }
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles(user.getRole().name())
+                .build();
+    }
 
-        if (!user.getPassword().equals(encryptionService.digest(password))) {
-            return null;
-        }
-
-        return toDto(user);
+    @Override
+    public UserDto findByEmail(String email) {
+        return toDto(userRepository.findByEmail(email));
     }
 
     private UserDto toDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }
 
-    private User toEntity(UserDto dto){
+    private User toEntity(UserDto dto) {
         return modelMapper.map(dto, User.class);
     }
 }

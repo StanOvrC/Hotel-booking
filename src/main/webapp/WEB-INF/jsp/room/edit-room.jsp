@@ -20,6 +20,7 @@
     </c:if>
 
     <form action="${pageContext.request.contextPath}/rooms/edit" method="post">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
       <input type="hidden" name="id" value="${room.id}"/>
 
       <label for="number">Room Number</label>
@@ -55,6 +56,7 @@
 
     <form action="${pageContext.request.contextPath}/rooms/delete" method="post"
           onsubmit="return confirm('Are you sure you want to delete this room?');">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
       <input type="hidden" name="id" value="${room.id}">
       <button type="submit" class="auth-btn"
               style="background:#c0392b; margin-top:5px;">Delete Room</button>

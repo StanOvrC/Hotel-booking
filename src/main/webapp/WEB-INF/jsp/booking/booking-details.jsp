@@ -57,7 +57,7 @@
                 </div>
             </div>
 
-            <c:if test="${sessionScope.currentUser.role == 'MANAGER' or sessionScope.currentUser.role == 'ADMIN'}">
+            <c:if test="${pageContext.request.isUserInRole('ADMIN') or pageContext.request.isUserInRole('MANAGER')}">
                 <div class="booking-info-section">
                     <h3>User Information</h3>
                     <div>
@@ -84,6 +84,7 @@
 
             <c:if test="${booking.status == 'PENDING' || booking.status == 'CONFIRMED'}">
                 <form action="${pageContext.request.contextPath}/bookings/cancel" method="post" class="booking-action-form">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                     <input type="hidden" name="id" value="${booking.id}">
                     <button type="submit" class="booking-btn booking-btn-cancel"
                             onclick="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.')">
@@ -93,8 +94,9 @@
             </c:if>
 
             <!-- Approve Button (only for admins on pending bookings) -->
-            <c:if test="${booking.status == 'PENDING' && (sessionScope.currentUser.role == 'MANAGER' or sessionScope.currentUser.role == 'ADMIN')}">
+            <c:if test="${booking.status == 'PENDING' && pageContext.request.isUserInRole('ADMIN') or pageContext.request.isUserInRole('MANAGER')}">
                 <form action="${pageContext.request.contextPath}/bookings/approve" method="post" class="booking-action-form">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                     <input type="hidden" name="id" value="${booking.id}">
                     <button type="submit" class="booking-btn booking-btn-approve">
                         Approve Booking

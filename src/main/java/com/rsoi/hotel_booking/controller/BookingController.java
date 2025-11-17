@@ -1,12 +1,15 @@
 package com.rsoi.hotel_booking.controller;
 
 import com.rsoi.hotel_booking.service.BookingService;
+import com.rsoi.hotel_booking.service.UserService;
 import com.rsoi.hotel_booking.service.dto.BookingDto;
 import com.rsoi.hotel_booking.service.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +22,11 @@ import java.util.List;
 @RequestMapping("/bookings")
 public class BookingController {
     private final BookingService bookingService;
+    private final UserService userService;
 
     @GetMapping
-    public String getUserBookings(HttpSession session, Model model) {
-        UserDto user = getCurrentUser(session);
+    public String getUserBookings(@AuthenticationPrincipal UserDetails currentUser, Model model) {
+        UserDto user = getCurrentUser(currentUser);
 
         List<BookingDto> bookings = isAdminOrManager(user)
                 ? bookingService.getAll()
@@ -33,7 +37,7 @@ public class BookingController {
     }
 
     @GetMapping("/add")
-    public String showAddForm(@RequestParam(name = "roomId", required = false) Long roomId, HttpSession session, Model model) {
+    public String showAddForm(@RequestParam(name = "roomId", required = false) Long roomId, Model model) {
         BookingDto booking = new BookingDto();
         if (roomId != null) {
             booking.setRoomId(roomId);
@@ -44,8 +48,8 @@ public class BookingController {
     }
 
     @PostMapping("/add")
-    public String addBooking(@ModelAttribute("booking") BookingDto bookingDto, HttpSession session, Model model) {
-        UserDto user = getCurrentUser(session);
+    public String addBooking(@ModelAttribute("booking") BookingDto bookingDto, @AuthenticationPrincipal UserDetails currentUser, Model model) {
+        UserDto user = getCurrentUser(currentUser);
         bookingDto.setUserId(user.getId());
 
         try {
@@ -58,10 +62,10 @@ public class BookingController {
     }
 
     @PostMapping("/cancel")
-    public String cancelBooking(@RequestParam("id") Long bookingId, HttpSession session) {
-        UserDto user = getCurrentUser(session);
+    public String cancelBooking(@RequestParam("id") Long bookingId, @AuthenticationPrincipal UserDetails currentUser) {
+        UserDto user = getCurrentUser(currentUser);
 
-        BookingDto booking = getBookingWithAccessCheck(bookingId, session);
+        BookingDto booking = getBookingWithAccessCheck(bookingId, user);
         if (booking == null) {
             return "redirect:/bookings";
         }
@@ -71,10 +75,10 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    public String bookingDetails(@PathVariable("id") Long bookingId, HttpSession session, Model model) {
-        UserDto user = getCurrentUser(session);
+    public String bookingDetails(@PathVariable("id") Long bookingId, @AuthenticationPrincipal UserDetails currentUser, Model model) {
+        UserDto user = getCurrentUser(currentUser);
+        BookingDto booking = getBookingWithAccessCheck(bookingId, user);
 
-        BookingDto booking = getBookingWithAccessCheck(bookingId, session);
         if (booking == null) {
             return "redirect:/bookings";
         }
@@ -83,39 +87,33 @@ public class BookingController {
         return "booking/booking-details";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping("/approve")
-    public String approveBooking(@RequestParam("id") Long bookingId, HttpSession session) {
-        UserDto user = getCurrentUser(session);
-        if (!isAdminOrManager(user)) return "redirect:/bookings";
-
+    public String approveBooking(@RequestParam("id") Long bookingId) {
         bookingService.updateStatus(bookingId, "CONFIRMED");
         return "redirect:/bookings";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping("/reject")
-    public String rejectBooking(@RequestParam("id") Long bookingId, HttpSession session) {
-        UserDto user = getCurrentUser(session);
-        if (!isAdminOrManager(user)) return "redirect:/bookings";
-
+    public String rejectBooking(@RequestParam("id") Long bookingId) {
         bookingService.updateStatus(bookingId, "CANCELLED");
         return "redirect:/bookings";
+    }
+
+    private UserDto getCurrentUser(UserDetails currentUser) {
+        return userService.findByEmail(currentUser.getUsername());
     }
 
     private boolean canAccessBooking(UserDto user, BookingDto booking) {
         return isAdminOrManager(user) || booking.getUserId().equals(user.getId());
     }
 
-    private UserDto getCurrentUser(HttpSession session) {
-        return (UserDto) session.getAttribute("currentUser");
-    }
-
     private boolean isAdminOrManager(UserDto user) {
         return "ADMIN".equals(user.getRole()) || "MANAGER".equals(user.getRole());
     }
 
-    private BookingDto getBookingWithAccessCheck(Long bookingId, HttpSession session) {
-        UserDto user = getCurrentUser(session);
-
+    private BookingDto getBookingWithAccessCheck(Long bookingId, UserDto user) {
         try {
             BookingDto booking = bookingService.getById(bookingId);
             return canAccessBooking(user, booking) ? booking : null;

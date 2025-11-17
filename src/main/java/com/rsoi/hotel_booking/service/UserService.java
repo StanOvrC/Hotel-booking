@@ -18,5 +18,5 @@ public interface UserService {
 
     boolean register(RegisterRequest request);
 
-    UserDto login(String email, String password);
+    UserDto findByEmail(String email);
 }

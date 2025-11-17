@@ -19,7 +19,7 @@
     </c:if>
 
     <form action="${pageContext.request.contextPath}/bookings/add" method="post">
-
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
         <c:if test="${not empty booking.roomId}">
             <input type="hidden" name="roomId" value="${booking.roomId}">
         </c:if>

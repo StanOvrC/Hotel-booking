@@ -21,6 +21,7 @@
         </c:if>
 
         <form action="${pageContext.request.contextPath}/users/register" method="post">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
             <label>Username</label>
             <input type="text" name="username" required placeholder="Enter username">
 

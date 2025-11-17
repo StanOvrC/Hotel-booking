@@ -4,6 +4,7 @@ import com.rsoi.hotel_booking.service.UserService;
 import com.rsoi.hotel_booking.service.dto.RegisterRequest;
 import com.rsoi.hotel_booking.service.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/users")
@@ -47,9 +50,11 @@ public class UserController {
         return "user/profile";
     }
 
-//    @GetMapping("/logout")
-//    public String logout(HttpSession session) {
-//        session.invalidate();
-//        return "redirect:/users/login";
-//    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping
+    public String getUsers(Model model) {
+        List<UserDto> users = userService.getAll();
+        model.addAttribute("users", users);
+        return "user/users";
+    }
 }

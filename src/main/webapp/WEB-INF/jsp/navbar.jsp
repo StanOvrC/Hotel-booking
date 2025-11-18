@@ -10,6 +10,10 @@
 
         <a href="${pageContext.request.contextPath}/bookings">Bookings</a>
 
+        <c:if test="${pageContext.request.isUserInRole('ADMIN') or pageContext.request.isUserInRole('MANAGER')}">
+        <a href="${pageContext.request.contextPath}/users">Users</a>
+        </c:if>
+
         <c:if test="${empty pageContext.request.userPrincipal}">
                <a href="${pageContext.request.contextPath}/users/login">Login</a>
                <a href="${pageContext.request.contextPath}/users/register">Register</a>

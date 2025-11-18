@@ -69,4 +69,20 @@ public class UserController {
         userService.delete(userId);
         return "redirect:/users";
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/edit/{id}")
+    public String editUserForm(@PathVariable("id") Long userId, Model model) {
+        UserDto userDto = userService.getById(userId);
+        model.addAttribute("user", userDto);
+        return "user/user-edit";
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/edit/{id}")
+    public String updateUser(@PathVariable("id") Long userId, @ModelAttribute("user") UserDto userDto) {
+        userDto.setId(userId);
+        userService.update(userDto);
+        return "redirect:/users";
+    }
 }

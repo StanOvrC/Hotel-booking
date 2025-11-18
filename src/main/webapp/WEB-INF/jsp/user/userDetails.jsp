@@ -44,11 +44,12 @@
         </div>
 
         <div class="user-booking-actions">
-            <a href="${pageContext.request.contextPath}/users/editRole/${user.id}"
-               class="btn-base user-edit-btn">Change Role</a>
+            <a href="${pageContext.request.contextPath}/users/edit/${user.id}"
+               class="btn-base user-edit-btn">Edit</a>
 
             <form action="${pageContext.request.contextPath}/users/delete/${user.id}" method="post"
                   class="user-delete-form">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                 <button type="submit" class="btn-base user-delete-btn">Delete User</button>
             </form>
         </div>

@@ -48,14 +48,6 @@
 
                     <div class="user-actions">
                         <a href="${pageContext.request.contextPath}/users/${u.id}" class="user-view-btn">View</a>
-
-                        <a href="${pageContext.request.contextPath}/users/${u.id}/edit" class="user-edit-btn">Edit</a>
-
-                        <form action="${pageContext.request.contextPath}/users/${u.id}/delete"
-                              method="post" class="user-action-form">
-                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                            <button type="submit" class="user-delete-btn">Delete</button>
-                        </form>
                     </div>
                 </div>
             </c:forEach>

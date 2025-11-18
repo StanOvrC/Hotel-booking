@@ -62,4 +62,11 @@ public class UserController {
         model.addAttribute("user", user);
         return "user/userDetails";
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/delete/{id}")
+    public String deleteUser(@PathVariable("id") Long userId) {
+        userService.delete(userId);
+        return "redirect:/users";
+    }
 }

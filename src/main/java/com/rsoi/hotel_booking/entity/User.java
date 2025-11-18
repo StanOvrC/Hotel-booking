@@ -3,6 +3,8 @@ package com.rsoi.hotel_booking.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "users")
@@ -20,6 +22,9 @@ public class User {
 
     @Column(name = "email")
     private String email;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Booking> bookings;
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)

@@ -1,105 +1,76 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<html>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-    <title>Bookings</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-    <style>
-
-    </style>
+    <title>Бронирования</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 <jsp:include page="/WEB-INF/jsp/navbar.jsp" />
 
-<div class="bookings-container">
-    <div class="bookings-header">
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>
             <c:choose>
-                <c:when test="${sessionScope.currentUser.role == 'MANAGER' or sessionScope.currentUser.role == 'ADMIN'}">
-                    All Bookings
-                </c:when>
-                <c:otherwise>
-                    My Bookings
-                </c:otherwise>
+                <c:when test="${sessionScope.currentUser.role == 'MANAGER' or sessionScope.currentUser.role == 'ADMIN'}">Все бронирования</c:when>
+                <c:otherwise>Мои бронирования</c:otherwise>
             </c:choose>
         </h1>
-        <a href="${pageContext.request.contextPath}/bookings/add" class="booking-filter-btn">New Booking</a>
+        <a href="${pageContext.request.contextPath}/bookings/add" class="btn btn-primary">Новое бронирование</a>
     </div>
 
     <c:if test="${not empty bookings}">
-        <div class="bookings-list">
-            <c:forEach items="${bookings}" var="booking">
-                <div class="booking-card">
-                    <div class="booking-content">
-                        <div class="booking-header">
-                            <h3 class="booking-title">Booking #${booking.id}</h3>
-                            <span class="booking-status-badge ${booking.status}">${booking.status}</span>
-                        </div>
-
-                        <div class="booking-details">
-                            <div class="booking-detail-row">
-                                <span class="booking-detail-label">Room Number</span>
-                                <span class="booking-detail-value">#${booking.roomId}</span>
-                            </div>
-                            <div class="booking-detail-row">
-                                <span class="booking-detail-label">Check-in Date</span>
-                                <span class="booking-detail-value">
-                                   ${booking.checkInDate}
-                                </span>
-                            </div>
-                            <div class="booking-detail-row">
-                                <span class="booking-detail-label">Check-out Date</span>
-                                <span class="booking-detail-value">
-                                    ${booking.checkOutDate}
-                                </span>
-                            </div>
-                            <div class="booking-detail-row">
-                                <span class="booking-detail-label">Total Price</span>
-                                <span class="booking-detail-value price">$${booking.totalPrice}</span>
-                            </div>
-                            <c:if test="${user.role == 'ADMIN' || user.role == 'MANAGER'}">
-                                <div class="booking-detail-row">
-                                    <span class="booking-detail-label">User ID</span>
-                                    <span class="booking-detail-value">${booking.userId}</span>
-                                </div>
-                            </c:if>
-                        </div>
-
-                        <div class="booking-actions">
-                            <a href="${pageContext.request.contextPath}/bookings/${booking.id}" class="booking-view-details-btn">
-                                View Details
-                            </a>
-                        </div>
-                    </div>
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Комната</th>
+                                <th>Заезд</th>
+                                <th>Выезд</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach items="${bookings}" var="booking">
+                                <tr>
+                                    <td>${booking.id}</td>
+                                    <td>${booking.roomId}</td>
+                                    <td>${booking.checkInDate}</td>
+                                    <td>${booking.checkOutDate}</td>
+                                    <td>$${booking.totalPrice}</td>
+                                    <td>
+                                        <span class="badge ${booking.status == 'CONFIRMED' ? 'bg-success' : booking.status == 'CANCELLED' ? 'bg-danger' : 'bg-warning text-dark'}">
+                                            ${booking.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="${pageContext.request.contextPath}/bookings/${booking.id}" class="btn btn-sm btn-outline-primary">Детали</a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
                 </div>
-            </c:forEach>
+            </div>
         </div>
     </c:if>
 
     <c:if test="${empty bookings}">
-        <div class="booking-no-bookings-container">
-            <div class="booking-no-bookings">
-                <h3>No Bookings Found</h3>
-                <p>
-                    <c:choose>
-                        <c:when test="${sessionScope.currentUser.role == 'MANAGER' or sessionScope.currentUser.role == 'ADMIN'}">
-                            There are no bookings in the system yet.
-                        </c:when>
-                        <c:otherwise>
-                            You don't have any bookings yet. Start by exploring our available rooms and make your first reservation!
-                        </c:otherwise>
-                    </c:choose>
-                </p>
-                <a href="${pageContext.request.contextPath}/rooms" class="booking-filter-btn">Browse Available Rooms</a>
-            </div>
+        <div class="alert alert-info text-center p-5">
+            <h3>Бронирований не найдено</h3>
+            <p>Вы еще не совершали бронирований.</p>
+            <a href="${pageContext.request.contextPath}/rooms" class="btn btn-primary mt-2">Просмотр номеров</a>
         </div>
     </c:if>
 </div>
 
-<footer>
-    <p>2025 Hotel</p>
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

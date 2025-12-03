@@ -1,103 +1,90 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <meta charset="UTF-8">
-    <title>Hotel Rooms</title>
+    <title>Номера отеля</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-img-top {
+            height: 250px; /* Фиксированная высота */
+            object-fit: cover; /* Картинка обрежется, но не растянется */
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
-<div class="main-content">
-    <!-- Filter Section -->
-    <form action="${pageContext.request.contextPath}/rooms/filter" method="get">
-        <section class="filter-section">
-            <div class="filter-bar">
-                <div class="filter-group">
-                    <label for="type">Room Type</label>
-                    <select id="type" name="type">
-                        <option value="">All Room Types</option>
-                        <option value="SINGLE">Single Room</option>
-                        <option value="DOUBLE">Double Room</option>
-                        <option value="FAMILY">Family Suite</option>
+<div class="container">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form action="${pageContext.request.contextPath}/rooms/filter" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Тип номера</label>
+                    <select id="type" name="type" class="form-select">
+                        <option value="">Все типы</option>
+                        <option value="SINGLE">Одноместный</option>
+                        <option value="DOUBLE">Двухместный</option>
+                        <option value="FAMILY">Семейный люкс</option>
                     </select>
                 </div>
-
-                <div class="filter-group">
-                    <label for="price">Max Price Per Night</label>
-                    <input type="number" id="price" name="maxPrice" placeholder="Enter max price" min="0">
+                <div class="col-md-4">
+                    <label for="price" class="form-label">Макс. цена за ночь</label>
+                    <input type="number" id="price" name="maxPrice" class="form-control" placeholder="Макс. цена" min="0">
                 </div>
-
-                <div class="filter-actions">
-                    <button class="filter-btn" type="submit">Apply Filters</button>
-                    <a href="${pageContext.request.contextPath}/rooms" class="reset-btn">Reset</a>
+                <div class="col-md-4">
+                    <button class="btn btn-primary me-2" type="submit">Применить</button>
+                    <a href="${pageContext.request.contextPath}/rooms" class="btn btn-secondary">Сброс</a>
                 </div>
-            </div>
-        </section>
-    </form>
+            </form>
+        </div>
+    </div>
 
-
-
-    <!-- Rooms Grid -->
-    <section class="rooms-container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
         <c:forEach var="room" items="${rooms}">
-            <div class="room-card">
-                <!-- Status Badge -->
-                <c:if test="${room.status != 'AVAILABLE'}">
-                    <div class="room-badge ${room.status == 'BOOKED' ? 'booked' : 'booked'}">
-                        ${room.status}
-                    </div>
-                </c:if>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="${pageContext.request.contextPath}/images/${room.type}.jpg"
+                         class="card-img-top"
+                         alt="${room.type}"
+                         onerror="this.src='https://placehold.co/600x400?text=No+Image'">
 
-                <!-- Room Image -->
-                <img class="room-image"
-                     src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                     alt="${room.type} Room">
-
-                <div class="room-content">
-                    <!-- Room Header -->
-                    <div class="room-header">
-                        <h3 class="room-type">${room.type} Room</h3>
-                        <span class="room-number">#${room.number}</span>
-                    </div>
-
-                    <!-- Room Description -->
-                    <p class="room-description">${room.description}</p>
-
-                    <!-- Room Footer -->
-                    <div class="room-footer">
-                        <div class="price">
-                            $${room.pricePerNight}<span class="price-period">/night</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">
+                                <c:choose>
+                                    <c:when test="${room.type == 'SINGLE'}">Одноместный</c:when>
+                                    <c:when test="${room.type == 'DOUBLE'}">Двухместный</c:when>
+                                    <c:when test="${room.type == 'FAMILY'}">Семейный</c:when>
+                                    <c:otherwise>${room.type}</c:otherwise>
+                                </c:choose>
+                            </h5>
+                            <span class="badge ${room.status == 'AVAILABLE' ? 'bg-success' : 'bg-secondary'}">
+                                ${room.status}
+                            </span>
                         </div>
-                        <a href="${pageContext.request.contextPath}/rooms/${room.id}" class="view-details-btn">
-                            View Details
-                        </a>
+                        <h6 class="card-subtitle mb-2 text-muted">Номер №${room.number}</h6>
+                        <p class="card-text text-truncate">${room.description}</p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center">
+                        <h5 class="text-primary mb-0">$${room.pricePerNight} <small class="text-muted fs-6">/ ночь</small></h5>
+                        <a href="${pageContext.request.contextPath}/rooms/${room.id}" class="btn btn-outline-primary btn-sm">Подробнее</a>
                     </div>
                 </div>
             </div>
         </c:forEach>
+    </div>
 
-        <!-- No Results State - FIXED CENTERING -->
-        <c:if test="${empty rooms}">
-            <div class="no-rooms-container">
-                <div class="no-rooms">
-                    <h3>No Rooms Available</h3>
-                    <p>We couldn't find any rooms matching your search criteria.</p>
-                    <a href="${pageContext.request.contextPath}/rooms" class="view-details-btn">
-                        View All Rooms
-                    </a>
-                </div>
-            </div>
-        </c:if>
-    </section>
+    <c:if test="${empty rooms}">
+        <div class="alert alert-info text-center mt-4" role="alert">
+            Номера по вашему запросу не найдены. <a href="${pageContext.request.contextPath}/rooms" class="alert-link">Показать все номера</a>.
+        </div>
+    </c:if>
 </div>
 
-<footer>
-    <p>2025 Hotel</p>
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

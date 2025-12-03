@@ -1,73 +1,89 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Room</title>
+    <title>Редактировать номер</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
-<section class="auth-container" style="margin-top: 30px;">
-  <div class="auth-card">
-    <h2>Edit Room</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">Редактировать номер</h4>
+                </div>
+                <div class="card-body p-4">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger">${error}</div>
+                    </c:if>
 
-    <c:if test="${not empty error}">
-      <div class="error-message">${error}</div>
-    </c:if>
+                    <form action="${pageContext.request.contextPath}/rooms/edit" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                        <input type="hidden" name="id" value="${room.id}"/>
 
-    <form action="${pageContext.request.contextPath}/rooms/edit" method="post">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-      <input type="hidden" name="id" value="${room.id}"/>
+                        <div class="mb-3">
+                            <label class="form-label">Номер комнаты</label>
+                            <input type="text" name="number" class="form-control" value="${room.number}" required>
+                        </div>
 
-      <label for="number">Room Number</label>
-      <input id="number" type="text" name="number" value="${room.number}" required>
+                        <div class="mb-3">
+                            <label class="form-label">Тип номера</label>
+                            <select name="type" class="form-select" required>
+                                <option value="SINGLE" ${room.type == 'SINGLE' ? 'selected' : ''}>Одноместный</option>
+                                <option value="DOUBLE" ${room.type == 'DOUBLE' ? 'selected' : ''}>Двухместный</option>
+                                <option value="FAMILY" ${room.type == 'FAMILY' ? 'selected' : ''}>Семейный</option>
+                            </select>
+                        </div>
 
-      <label for="type">Room Type</label>
-      <select id="type" name="type" required>
-        <option value="SINGLE" ${room.type == 'SINGLE' ? 'selected' : ''}>Single</option>
-        <option value="DOUBLE" ${room.type == 'DOUBLE' ? 'selected' : ''}>Double</option>
-        <option value="FAMILY" ${room.type == 'FAMILY' ? 'selected' : ''}>Family</option>
-      </select>
+                        <div class="mb-3">
+                            <label class="form-label">Цена за ночь</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" step="0.01" name="pricePerNight" class="form-control" value="${room.pricePerNight}" required>
+                            </div>
+                        </div>
 
-      <label for="price">Price per Night</label>
-      <input id="price" type="number" step="0.01" name="pricePerNight" value="${room.pricePerNight}" required>
+                        <div class="mb-3">
+                            <label class="form-label">Статус</label>
+                            <select name="status" class="form-select">
+                                <option value="AVAILABLE" ${room.status == 'AVAILABLE' ? 'selected' : ''}>Доступен</option>
+                                <option value="BOOKED" ${room.status == 'BOOKED' ? 'selected' : ''}>Занят</option>
+                            </select>
+                        </div>
 
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="AVAILABLE" ${room.status == 'AVAILABLE' ? 'selected' : ''}>Available</option>
-        <option value="BOOKED" ${room.status == 'BOOKED' ? 'selected' : ''}>Booked</option>
-      </select>
+                        <div class="mb-3">
+                            <label class="form-label">Описание</label>
+                            <textarea name="description" class="form-control" rows="4" required>${room.description}</textarea>
+                        </div>
 
-      <label for="description">Description</label>
-      <textarea id="description" name="description" rows="4" required>${room.description}</textarea>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                            <a href="${pageContext.request.contextPath}/rooms" class="btn btn-outline-secondary">Назад к номерам</a>
+                        </div>
+                    </form>
 
-      <button type="submit" class="auth-btn" style="margin-top: 20px;">Save Changes</button>
+                    <hr class="my-4">
 
-      <div class="switch-link">
-        <a href="${pageContext.request.contextPath}/rooms">&larr; Back to Rooms</a>
-      </div>
-    </form>
-
-    <hr style="margin: 25px 0; border: none; border-top: 1px solid #ddd;">
-
-    <form action="${pageContext.request.contextPath}/rooms/delete" method="post"
-          onsubmit="return confirm('Are you sure you want to delete this room?');">
-          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-      <input type="hidden" name="id" value="${room.id}">
-      <button type="submit" class="auth-btn"
-              style="background:#c0392b; margin-top:5px;">Delete Room</button>
-    </form>
-
-  </div>
-</section>
-
-<footer>
-    2025 Hotel
-</footer>
-
+                    <form action="${pageContext.request.contextPath}/rooms/delete" method="post"
+                          onsubmit="return confirm('Вы уверены, что хотите удалить этот номер?');">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                        <input type="hidden" name="id" value="${room.id}">
+                        <div class="d-grid">
+                             <button type="submit" class="btn btn-outline-danger">Удалить номер</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

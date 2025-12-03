@@ -2,6 +2,8 @@ package com.rsoi.hotel_booking.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -24,6 +26,8 @@ public class User {
     private String email;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Booking> bookings;
 
     @Column(name = "role")

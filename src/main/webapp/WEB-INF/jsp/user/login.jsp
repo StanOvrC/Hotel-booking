@@ -1,45 +1,59 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Hotel</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <title>Вход</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
-<div class="main-content">
-<section class="auth-container">
-    <div class="auth-card">
-        <h2>Login</h2>
 
-        <c:if test="${not empty error}">
-            <div class="error-message">${error}</div>
-        </c:if>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Вход</h2>
 
-        <form action="${pageContext.request.contextPath}/users/login" method="post">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-            <label>Email</label>
-            <input type="email" name="username" required placeholder="Enter your email">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger" role="alert">
+                             Неверное имя пользователя или пароль.
+                        </div>
+                    </c:if>
 
-            <label>Password</label>
-            <input type="password" name="password" required placeholder="Enter your password">
+                    <c:if test="${param.logout != null}">
+                         <div class="alert alert-success">Вы успешно вышли из системы.</div>
+                    </c:if>
 
-            <button type="submit" class="auth-btn">Login</button>
-        </form>
+                    <form action="${pageContext.request.contextPath}/users/login" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 
-        <p class="switch-link">
-            Don't have an account? <a href="${pageContext.request.contextPath}/users/register">Register</a>
-        </p>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="username" class="form-control" placeholder="name@example.com" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Пароль</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Войти</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="small">Нет аккаунта? <a href="${pageContext.request.contextPath}/users/register">Зарегистрироваться</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</section>
 </div>
-
-<footer>
-    2025 Hotel
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

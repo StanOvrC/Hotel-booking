@@ -1,63 +1,82 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Add Room</title>
+    <title>Добавить новый номер</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
-<div class="main-content">
-<section class="auth-container" style="margin-top: 30px;">
-  <div class="auth-card" >
-    <h2>Add New Room</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Добавить новый номер</h4>
+                </div>
+                <div class="card-body p-4">
 
-    <c:if test="${not empty error}">
-      <div class="error-message">${error}</div>
-    </c:if>
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger" role="alert">
+                            ${error}
+                        </div>
+                    </c:if>
 
-    <form action="${pageContext.request.contextPath}/rooms/add" method="post">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-      <label for="number">Room Number</label>
-      <input id="number" type="text" name="number" placeholder="e.g. 101" required>
+                    <form action="${pageContext.request.contextPath}/rooms/add" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 
-      <label for="type">Room Type</label>
-      <select id="type" name="type" required>
-        <option value="">Select type...</option>
-        <option value="SINGLE">Single</option>
-        <option value="DOUBLE">Double</option>
-        <option value="FAMILY">Family</option>
-      </select>
+                        <div class="mb-3">
+                            <label for="number" class="form-label">Номер комнаты</label>
+                            <input id="number" type="text" name="number" class="form-control" placeholder="например, 101" required>
+                        </div>
 
-      <label for="price">Price per Night</label>
-      <input id="price" type="number" step="0.01" name="pricePerNight" placeholder="e.g. 89.99" required>
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Тип номера</label>
+                            <select id="type" name="type" class="form-select" required>
+                                <option value="" disabled selected>Выберите тип...</option>
+                                <option value="SINGLE">Одноместный</option>
+                                <option value="DOUBLE">Двухместный</option>
+                                <option value="FAMILY">Семейный</option>
+                            </select>
+                        </div>
 
-      <label for="status">Status</label>
-      <select id="status" name="status">
-        <option value="AVAILABLE">Available</option>
-        <option value="BOOKED">Booked</option>
-      </select>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Цена за ночь</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input id="price" type="number" step="0.01" name="pricePerNight" class="form-control" placeholder="например, 89.99" required>
+                            </div>
+                        </div>
 
-      <label for="description">Description</label>
-      <textarea id="description" name="description" rows="4" placeholder="Describe the room..." required></textarea>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Статус</label>
+                            <select id="status" name="status" class="form-select">
+                                <option value="AVAILABLE" selected>Доступен</option>
+                                <option value="BOOKED">Занят</option>
+                            </select>
+                        </div>
 
-      <button type="submit" class="auth-btn" style="margin-top: 20px;">Save Room</button>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Описание</label>
+                            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Описание номера..." required></textarea>
+                        </div>
 
-      <div class="switch-link">
-        <a href="${pageContext.request.contextPath}/rooms">&larr; Back to Rooms</a>
-      </div>
-    </form>
-  </div>
-</section>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Сохранить номер</button>
+                            <a href="${pageContext.request.contextPath}/rooms" class="btn btn-outline-secondary">Назад к номерам</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<footer>
-    2025 Hotel
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

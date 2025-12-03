@@ -1,81 +1,56 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Профиль</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
 <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
-<div class="main-content">
-    <div class="profile-container">
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    ${fn:toUpperCase(fn:substring(user.username, 0, 1))}
-                </div>
-                <h2 class="profile-username">${user.username}</h2>
-                <p class="profile-email">${user.email}</p>
-            </div>
-
-            <div class="profile-body">
-                <div class="profile-info">
-                    <div class="info-item">
-                        <span class="info-label">Username:</span>
-                        <span class="info-value">${user.username}</span>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow text-center">
+                <div class="card-body p-5">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3"
+                         style="width: 80px; height: 80px; font-size: 2rem;">
+                        ${fn:toUpperCase(fn:substring(user.username, 0, 1))}
                     </div>
 
-                    <div class="info-item">
-                        <span class="info-label">Email:</span>
-                        <span class="info-value">${user.email}</span>
+                    <h3 class="card-title">${user.username}</h3>
+                    <p class="text-muted">${user.email}</p>
+
+                    <ul class="list-group list-group-flush text-start mt-4 mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Роль
+                            <span class="badge ${user.role == 'ADMIN' ? 'bg-danger' : user.role == 'MANAGER' ? 'bg-warning text-dark' : 'bg-info text-dark'}">
+                                ${user.role}
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Статус аккаунта
+                            <span class="badge bg-success">Активен</span>
+                        </li>
+                    </ul>
+
+                    <div class="d-grid gap-2">
+                         <form action="${pageContext.request.contextPath}/users/logout" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                            <button type="submit" class="btn btn-danger w-100">Выйти</button>
+                        </form>
+                        <a href="${pageContext.request.contextPath}/rooms" class="btn btn-outline-secondary">Назад к номерам</a>
                     </div>
-
-                    <div class="info-item">
-                        <span class="info-label">Role:</span>
-                        <span class="info-value">
-                            <c:choose>
-                                <c:when test="${user.role == 'ADMIN'}">
-                                    <span class="status-badge" style="background: #0077cc; color: white;">${user.role}</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="status-badge">${user.role}</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </span>
-                    </div>
-
-                    <div class="info-item">
-                        <span class="info-label">Status:</span>
-                        <span class="info-value">
-                            <span class="status-badge">Active</span>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="profile-actions">
-                    <form action="${pageContext.request.contextPath}/users/logout" method="post">
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                        <button type="submit" class="logout-btn">Logout</button>
-                    </form>
-                </div>
-
-                <div class="back-link-profile">
-                    <a href="${pageContext.request.contextPath}/rooms">&larr; Back to Rooms</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<footer>
-    <p>2025 Hotel</p>
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,73 +1,67 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-    <title>Users</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <title>Управление пользователями</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
 <jsp:include page="/WEB-INF/jsp/navbar.jsp" />
 
-<div class="users-container">
-    <div class="users-header">
-        <h1>Users</h1>
-        <a href="${pageContext.request.contextPath}/users/add" class="user-add-btn">Add User</a>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Управление пользователями</h1>
+        <a href="${pageContext.request.contextPath}/users/register" class="btn btn-success">Добавить пользователя</a>
     </div>
 
     <c:if test="${not empty users}">
-        <div class="users-list">
-            <c:forEach items="${users}" var="u">
-                <div class="user-card">
-                    <div class="user-header">
-                        <h3 class="user-title">${u.username}</h3>
-                        <span class="user-role-badge ${u.role}">${u.role}</span>
-                    </div>
-
-                    <div class="user-details">
-                        <div class="user-detail-row">
-                            <span class="user-detail-label">ID</span>
-                            <span class="user-detail-value">${u.id}</span>
-                        </div>
-
-                        <div class="user-detail-row">
-                            <span class="user-detail-label">Email</span>
-                            <span class="user-detail-value">${u.email}</span>
-                        </div>
-
-                        <div class="user-detail-row">
-                            <span class="user-detail-label">Role</span>
-                            <span class="user-detail-value">${u.role}</span>
-                        </div>
-
-                        <div class="user-detail-row">
-                            <span class="user-detail-label">Bookings</span>
-                            <span class="user-detail-value">${u.username}</span>
-                        </div>
-                    </div>
-
-                    <div class="user-actions">
-                        <a href="${pageContext.request.contextPath}/users/${u.id}" class="user-view-btn">View</a>
-                    </div>
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Имя пользователя</th>
+                                <th>Email</th>
+                                <th>Роль</th>
+                                <th class="text-end">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach items="${users}" var="u">
+                                <tr>
+                                    <td>${u.id}</td>
+                                    <td class="fw-bold">${u.username}</td>
+                                    <td>${u.email}</td>
+                                    <td>
+                                        <span class="badge ${u.role == 'ADMIN' ? 'bg-danger' : u.role == 'MANAGER' ? 'bg-warning text-dark' : 'bg-secondary'}">
+                                            ${u.role}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="${pageContext.request.contextPath}/users/${u.id}" class="btn btn-sm btn-outline-primary">Просмотр и ред.</a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
                 </div>
-            </c:forEach>
+            </div>
         </div>
     </c:if>
 
     <c:if test="${empty users}">
-        <div class="users-no-container">
-            <div class="users-no">
-                <h3>No Users Found</h3>
-                <p>There are no users in the system yet.</p>
-                <a href="${pageContext.request.contextPath}/users/add" class="user-add-btn">Add User</a>
-            </div>
+        <div class="alert alert-warning text-center">
+            <h3>Пользователи не найдены</h3>
+            <p>Система пока пуста.</p>
         </div>
     </c:if>
 </div>
 
-<footer>
-    <p>2025 Hotel</p>
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -49,7 +49,8 @@ public class SecurityConfig {
                 "/css/**",
                 "/js/**",
                 "/error",
-                "/WEB-INF/jsp/**"
+                "/WEB-INF/jsp/**",
+                "/images/**"
         );
     }
 }

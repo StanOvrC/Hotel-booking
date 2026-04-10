@@ -2,6 +2,10 @@ package com.rsoi.hotel_booking.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -21,11 +25,16 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Booking> bookings;
+
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
 
     public enum Role {
-        GUEST, MANAGER, ADMIN
+        USER, MANAGER, ADMIN
     }
 }

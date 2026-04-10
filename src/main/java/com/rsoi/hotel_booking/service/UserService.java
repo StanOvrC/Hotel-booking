@@ -1,5 +1,6 @@
 package com.rsoi.hotel_booking.service;
 
+import com.rsoi.hotel_booking.service.dto.RegisterRequest;
 import com.rsoi.hotel_booking.service.dto.UserDto;
 
 import java.util.List;
@@ -14,4 +15,8 @@ public interface UserService {
     UserDto update(UserDto userDto);
 
     void delete(Long id);
+
+    boolean register(RegisterRequest request);
+
+    UserDto findByEmail(String email);
 }

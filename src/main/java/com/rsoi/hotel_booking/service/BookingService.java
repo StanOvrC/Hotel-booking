@@ -14,4 +14,10 @@ public interface BookingService {
     BookingDto update(BookingDto bookingDto);
 
     void delete(Long id);
+
+    List<BookingDto> getByUser(Long id);
+
+    void cancel(Long bookingId);
+
+    void updateStatus(Long id, String status);
 }

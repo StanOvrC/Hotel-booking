@@ -2,6 +2,7 @@ package com.rsoi.hotel_booking.service;
 
 import com.rsoi.hotel_booking.service.dto.RoomDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface RoomService {
@@ -14,4 +15,6 @@ public interface RoomService {
     RoomDto update(RoomDto roomDto);
 
     void delete(Long id);
+
+    List<RoomDto> filterRooms(String type, BigDecimal maxPrice);
 }

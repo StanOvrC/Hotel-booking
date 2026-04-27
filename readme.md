@@ -30,12 +30,14 @@ A full-stack Spring Boot web application for hotel reservations. It provides a u
 
 ## Quick Start
 
-1. **Database Setup:** * Create a PostgreSQL database named `hotel_booking`. 
+1. **Database Setup:**
+   * Create a PostgreSQL database named `hotel_booking`. 
    * Run the SQL script located at `sql scripts/scripts.sql` to initialize the database tables and insert sample data (including rooms and default users).
    
-2. **Configuration:** * Verify your database credentials in `src/main/resources/application.properties`. Defaults are user `postgres` and password `root`.
+3. **Configuration:**
+   * Verify your database credentials in `src/main/resources/application.properties`. Defaults are user `postgres` and password `root`.
 
-3. **Run the App:**
+5. **Run the App:**
    ```bash
    ./mvnw clean install
    ./mvnw spring-boot:run
